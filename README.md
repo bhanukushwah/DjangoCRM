@@ -18,7 +18,7 @@ $ sudo pip install django
 ```
 While you can do this to install Django, globally on your system, it's strongly not recommend. Instead you need to use a virtual environement to install packages.
 
-Creating a MySQL Database
+## Creating a MySQL Database
 We'll be using a MySQL database. In your terminal invoke the mysql client using the following command:
 ```
 $ mysql -u root -p
@@ -30,7 +30,7 @@ Next, run the following SQL statement to create a database:
 mysql> create database crmdb;
 ```
 
-Creating a Virtual Environment
+## Creating a Virtual Environment
 Let's start our tutorial by creating a virtual environment. Open a new terminal, navigate to a working folder and run the following command:
 ```
 $ cd ~/demos
@@ -51,7 +51,7 @@ You will also need to install the MySQL client for Python using pip:
 ```
 $ pip install mysqlclient
 ```
-Creating a Django Project
+## Creating a Django Project
 Now, let's proceed to creating our django project. In your terminal, run the following command:
 ```
 $ django-admin startproject simplecrm
@@ -108,7 +108,7 @@ $ python manage.py migrate
 
 You will be able to access your database from the 127.0.0.1:8000 address.
 
-Create an Admin User
+## Create an Admin User
 Let's create an admin user using the following command:
 ```
 $ python manage.py createsuperuser
