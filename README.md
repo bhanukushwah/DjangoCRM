@@ -1,53 +1,61 @@
 # DjangoCRM
 
 
-Installing Python on Linux
-If you are using a Linux system, there is a great chance that you already have Python installed but you may have an old version. In this case you can very easily update it via your terminal depending on your Linux distribution.
-
-
-Installing PIP
+## Installing PIP
 PIP is a Python package manager which's used to install Python packages from Python Package Index which is more advanced than easy_install the default Python package manager that's installed by default when you install Python.
 
 You should use PIP instaed of easy_install whenever you can but for installing PIP itself you should use easy_install. So let's first install PIP:
 
 Open your terminal and enter:
-
+```
 $ sudo easy_install pip
+```
 You can now install Django on your system using pip
 
+
+```
 $ sudo pip install django
+```
 While you can do this to install Django, globally on your system, it's strongly not recommend. Instead you need to use a virtual environement to install packages.
 
 Creating a MySQL Database
 We'll be using a MySQL database. In your terminal invoke the mysql client using the following command:
-
+```
 $ mysql -u root -p
+```
 Enter your MySQL password and hit Enter.
 
 Next, run the following SQL statement to create a database:
-
+```
 mysql> create database crmdb;
+```
+
 Creating a Virtual Environment
 Let's start our tutorial by creating a virtual environment. Open a new terminal, navigate to a working folder and run the following command:
-
+```
 $ cd ~/demos
 $ python3 -m venv .env
+```
 Next, activate the virtual environment using the following command:
-
+```
 $ source .env/bin/activate
+```
+
 Installing Django and Django REST Framework
 Now, that you have created and activated your virtual environment, you can install your Python packages using pip. In your terminal where you have activated the virtual environment, run the following commands to install the necessary packages:
-
+```
 $ pip install django
 $ pip install djangorestframework
+```
 You will also need to install the MySQL client for Python using pip:
-
+```
 $ pip install mysqlclient
-
+```
 Creating a Django Project
 Now, let's proceed to creating our django project. In your terminal, run the following command:
-
+```
 $ django-admin startproject simplecrm
+```
 This command will take care of creating a bunch of necessary files for the project.
 
 Executing the tree command in the root of our created project will show us the files that were created.
@@ -73,7 +81,7 @@ manage.py is another Django utility to manage the project including creating dat
 These are the basic files that you will find in every Django project. Now the next step is to set up and create the database.
 
 Next, open the settings.py file and update the database setting to point to our crmdb database:
-
+```
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
@@ -84,33 +92,40 @@ DATABASES = {
         'PORT': '3306',
     }    
 }
+```
 Next, add rest_framework to the INSTALLED_APPS array:
-
+```
 INSTALLED_APPS = [
     # [...]
     'rest_framework'
 ]
+```
 Finally, migrate the database using the following commands:
-
+```
 $ cd simplecrm
 $ python manage.py migrate
+```
+
 You will be able to access your database from the 127.0.0.1:8000 address.
 
 Create an Admin User
 Let's create an admin user using the following command:
-
+```
 $ python manage.py createsuperuser
+```
 Creating a Django Application
 Next, let's create a Django application for encapsulating our core CRM functionality. In your terminal, run the following command:
-
+```
 $ python manage.py startapp crmapp
+```
 Next, you need to add it in the settings.py file:
-
+```
 INSTALLED_APPS = [
     # ...
     'rest_framework',
     'crmapp'
 ]
+```
 Creating the Database Models
 Let's now proceed to create the database models for our application. We are going to create the following models:
 
@@ -123,7 +138,7 @@ ActivityStatus
 We have three main models which are Contact, Account and Activity. The last three models are simply lookup tables (They can be replaced by an enum).
 
 Open the crmapp/models.py file and the following code:
-
+```
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -192,14 +207,16 @@ class Activity(models.Model):
 
     def __str__(self):
         return self.description
+```
 
-Creating Model Serializers
+## Creating Model Serializers
 After creating models we need to create the serializers. In the crmapp folder create a serializers.py file:
-
+```
 $ cd crmapp
 $ touch serializers.py
+```
 Next, open the file and add the following imports:
-
+```
 from rest_framework import serializers
 
 from .models import Account, Activity, ActivityStatus, Contact, ContactSource, ContactStatus
@@ -234,14 +251,17 @@ class ContactStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactStatus
         fields = "__all__"
-Creating API Views
+        
+```
+## Creating API Views
 After creating the model serializers, let's now create the API views. Open the crmapp/views.py file and add the following imports:
-
+```
 from rest_framework import generics
 from .models import Account, Activity, ActivityStatus, Contact, ContactSource, ContactStatus
 from .serializers import AccountSerializer, ActivitySerializer, ActivityStatusSerializer, ContactSerializer, ContactSourceSerializer, ContactStatusSerializer
+```
 Next, add the following views:
-
+```
 from rest_framework import generics
 from .models import Account, Activity, ActivityStatus, Contact, ContactSource, ContactStatus
 from .serializers import AccountSerializer, ActivitySerializer, ActivityStatusSerializer, ContactSerializer, ContactSourceSerializer, ContactStatusSerializer
@@ -269,20 +289,26 @@ class ContactStatusAPIView(generics.ListCreateAPIView):
 class ContactSourceAPIView(generics.ListCreateAPIView):
     queryset = ContactSource.objects.all()
     serializer_class = ContactSourceSerializer
+```
+    
 After creating these models, you need to create migrations using the following command:
-
+```
 $ python manage.py makemigrations
+```
 Next, you need to migrate your database using the following command:
-
+```
 $ python manage.py migrate
-Creating API URLs
-Let's now create the API URLs to access our API views. Open the urls.py file and add the following imports:
+```
 
+## Creating API URLs
+Let's now create the API URLs to access our API views. Open the urls.py file and add the following imports:
+```
 from django.contrib import admin
 from django.urls import path
 from crmapp import views
+```
 Next, add the following content:
-
+```
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'accounts', views.AccountAPIView.as_view(), name='account-list'),
@@ -292,27 +318,32 @@ urlpatterns = [
     path(r'contactsources', views.ContactSourceAPIView.as_view(), name='contact-source-list'),
     path(r'contactstatuses', views.ContactStatusAPIView.as_view(), name='contact-status-list')
 ]
-Enabling CORS
+```
+## Enabling CORS
 For development purposes, we'll need to enable CORS (Cross Origin Resource Sharing) in our Django application.
 
 So start by installing django-cors-headers using pip
-
+```
 $ pip install django-cors-headers
+```
 Next, you need to add it to your project settings.py file:
-
+```
 INSTALLED_APPS = (
     ## [...]
     'corsheaders'
 )
+```
 Next, you need to add corsheaders.middleware.CorsMiddleware middleware to the middleware classes in settings.py
-
+```
 MIDDLEWARE = (
     'corsheaders.middleware.CorsMiddleware',
     # [...]
 )
+```
 You can then, either enable CORS for all domains by adding the following setting:
-
+```
 CORS_ORIGIN_ALLOW_ALL = True
+```
 You can find more configuration options from the docs.
 
 Starting the local development server
@@ -320,7 +351,9 @@ Django has a local development server that can be used while developing your pro
 
 To start the local server for your project, you can simply issue the following command inside your project root directory:
 
+```
 $ python manage.py runserver
+```
 Next navigate to the http://localhost:8000/ address with a web browser.
 
 You should see a web page with a message:
